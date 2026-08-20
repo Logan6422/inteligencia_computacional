@@ -23,19 +23,35 @@ class neurona:
         res = np.dot(pesos, input);
         return res
 
+    def calc_delta(self, deseada, output):
+        error = (deseada - output)
+        deriv = derivada_sigmoidea(output)
+        delta_actual = error*deriv
+        return delta_actual
+
+    def calc_delta(self,output, delta_prev, pesos_prev):
+        deriv = derivada_sigmoidea(output)
+        delta_actual = delta_prev * pesos_prev * deriv
+        return delta_actual
+
+
     
         
 
 
 class capa:
-    neuronas = [],
+    neuronas = []
     output = []
+    delta = []
 
-    def backward_pass(self, deseada):
+    def backward_pass(self,deseada):
         #chequear numpy.resta
-        error = (deseada - self.output)
+        #aplicar delta
+        self.delta.append(self.neuronas.calc_delta(deseada, self.output))
 
-
+    def backward_pass(self, delta_prev, pesos_prev):
+        for i in range(self.output):
+            self.delta.append(self.neuronas.calc_delta(delta_prev,self.output, delta_prev, pesos_prev))
 
     def forward_pass(self,input):
         input.append(-1)
@@ -58,7 +74,7 @@ class red:
         self.capas = [],
         self.cantInput = cantInput
         self.datos = pd.DataFrame
-
+    #chequear uso de len
     def init_red(self,cantNeuPorCapas):
         for i in range (cantNeuPorcapas):
             arrayNeuronas = []
@@ -82,7 +98,20 @@ class red:
                     self.capas[j].forward_pass(self.capas[j-1].output)
 
 
+            fila = self.datos.iloc[i]
+            deseada = np.array(fila.iloc[2])
+            self.capas[i].backward_pass(deseada)
+
+            #calcular calibracion de pesos
+            #primer delta
+            fila = self.datos.iloc[i]
+            deseada = np.array(fila.iloc[2])
+            delta = self.capas[i].backward_pass(deseada)
             # Retropropagacion
+            for i in range(len(self.capas)-1,0,-1):
+                self.capas[i].backward_pass(delta, )
+
+            #chequear sacar bias
 
             # y = self.capas[len(self.capas)-1].output;
             #chekin        
