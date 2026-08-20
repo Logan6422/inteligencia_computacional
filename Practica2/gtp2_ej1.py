@@ -34,6 +34,9 @@ class neurona:
         delta_actual = delta_prev * pesos_prev * deriv
         return delta_actual
 
+        #definir el delta por separado
+        #funcion aparte
+
 
     
         
