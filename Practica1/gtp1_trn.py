@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 
 it = 0;
 epocaMax = 5;
-datos = pd.read_csv("OR_50_trn.csv");
+datos = pd.read_csv("XOR_trn.csv");
 datos["bias"] = -1;
 porcentaje_aciertos = 0;
 pesos = np.random.uniform(-0.5,0.5,3);

@@ -3,7 +3,7 @@ import pandas as pd
 
 it = 0;
 epocaMax = 100;
-datos = pd.read_csv("OR_50tst.csv");
+datos = pd.read_csv("XOR_tst.csv");
 datos["bias"] = -1;
 porcentaje_aciertos = 0;
 pesos = pd.read_csv("pesos.csv").to_numpy().flatten()
@@ -23,10 +23,10 @@ for i in range(cantidad_entradas):
 porcentaje_aciertos = (sum/cantidad_entradas)*100; 
 print("Pesos:", pesos, "Porcentaje aciertos: ", porcentaje_aciertos);
 
-historico = pd.read_csv("resultados_historicos_OR_50.csv");
+historico = pd.read_csv("resultados_historicos_XOR.csv");
 nueva_fila = pd.DataFrame(
     [[pesos[0], pesos[1], pesos[2], porcentaje_aciertos]],
     columns=["w1", "w2", "w0", "porcentaje"]
 )
 historico = pd.concat([historico, nueva_fila],ignore_index=True);
-historico.to_csv("resultados_historicos_OR_50.csv",index=False);
+historico.to_csv("resultados_historicos_XOR.csv",index=False);
