@@ -15,10 +15,11 @@ class neurona:
     pesobias = 0
 
     def __init__(self,cant_in):
-        self.pesobias = np.random(-0.5,0.5,1);
-        self.pesos = np.random(-0.5,0.5,cant_in);
+        self.pesobias = np.random.uniform(-0.5,0.5,1);
+        self.pesos = np.random.uniform(-0.5,0.5,cant_in);
 
     def prod_pto(self,input):
+        res = [];
         res.append(self.pesobias);
         res = np.dot(pesos, input);
         return res
