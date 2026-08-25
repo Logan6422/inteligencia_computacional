@@ -92,7 +92,7 @@ class red:
 
         plt.pause(0.001);
 
-    def visualizador_final(self, aciertos, porcentaje):
+    def visualizador_final(self,it, aciertos, porcentaje):
         print("Pesos finales:");
 
         for i in range(len(self.capas)):
@@ -104,6 +104,7 @@ class red:
         print("/////////////////////////////////////////////////////");
         print("Aciertos:",aciertos);
         print("Porcentaje:",porcentaje);
+        print("Epocas:", it);
 
     def graficar_zona(self,datos):
         x = np.linspace(-2,2,100);
@@ -125,24 +126,15 @@ class red:
 
         self.ax.contourf(X,Y,Z,levels=[-1,0,1],alpha=0.3);
 
-        datos_pos=datos[datos.iloc[:,2]==1];
-        datos_neg=datos[datos.iloc[:,2]==-1];
-
-        self.ax.scatter(datos_pos.iloc[:,0],datos_pos.iloc[:,1]);
-        self.ax.scatter(datos_neg.iloc[:,0],datos_neg.iloc[:,1]);
 
         self.ax.set_title("Zona de decisión");
-        self.ax.set_xlabel("x1");
-        self.ax.set_ylabel("x2");
-        self.ax.set_xlim(-2,2);
-        self.ax.set_ylim(-2,2);
 
         self.fig.canvas.draw_idle();
         self.fig.canvas.flush_events();
 
         plt.pause(0.001);
 
-    def entrenar(self, datosEntrenamiento, maxEpocas, porcentajeObjetivo):
+    def entrenar(self, printIt, printFinal, graficar, datosEntrenamiento, maxEpocas, porcentajeObjetivo):
         it = 0;
         porcentaje = 0;
 
@@ -173,23 +165,27 @@ class red:
 
             porcentaje = (aciertos / len(datosEntrenamiento)) * 100;
 
-            print("Epoca:", it,"Aciertos:", aciertos,"Porcentaje:", porcentaje);
-            self.grafico_cerrado=False;
-            for j in range(len(self.capas[0].lista_neuronas)):
-                self.graficar(datosEntrenamiento,j+1);
+            if(printIt):
+                print("Epoca:", it,"Aciertos:", aciertos,"Porcentaje:", porcentaje);
 
-            self.graficar_zona(datosEntrenamiento);
+            if(graficar):
+                self.grafico_cerrado=False;
+                for j in range(len(self.capas[0].lista_neuronas)):
+                    self.graficar(datosEntrenamiento,j+1);
 
-            while not self.grafico_cerrado:
-                plt.pause(0.1);
+                self.graficar_zona(datosEntrenamiento);
 
-            plt.close(self.fig);
-            del self.fig;
-            del self.ax;
+                while not self.grafico_cerrado:
+                    plt.pause(0.1);
+
+                plt.close(self.fig);
+                del self.fig;
+                del self.ax;
         
-            
             it += 1;
-        # self.visualizador_final(aciertos, porcentaje);
+
+        if(printFinal):
+            self.visualizador_final(it,aciertos, porcentaje);
 
             
 
