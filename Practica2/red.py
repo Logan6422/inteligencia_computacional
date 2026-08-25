@@ -1,12 +1,12 @@
 import numpy as np
 import capa as c
+import pandas as pd
+import matplotlib.pyplot as plt
 
 class red:
     def __init__(self, eta, cantEntradas, arquitectura):
         self.capas = [];
         self.eta = eta;
-        # self.datos = 0 (pandas csv)
-        deseada = [];
 
         cantEntradaIteracion = cantEntradas;
         for i in range(len(arquitectura)):
@@ -23,22 +23,173 @@ class red:
         return self.capas[-1].output[0]; #salida final (lo dejo en vector por si puede haber mas de una salida)
 
     def backward_pass(self, deseada):
-        #delta salida
-        self.capas[-1].backward_final(deseada)
+        #delta de la capa de salida
+        self.capas[-1].backward_final(deseada);
 
-        for i in range(len(self.capas[i].lista_neuronas) - 2, -1, -1):
-            capa_sig = self.capas[i + 1]
-            delta_sig = capa_sig.lista_deltas
+        #desde la penultima capa hasta la primera
+        for i in range(len(self.capas) - 2, -1, -1):
+            capa_sig = self.capas[i + 1];
+            delta_sig = capa_sig.lista_deltas;
+            pesos_sig = [];
 
-            pesos_sig = []
-            for j in range(len(self.capas[i])):
-                pesos_neurona = []
-
+            for j in range(len(self.capas[i].lista_neuronas)):
+                pesos_neurona = [];
+                
                 for k in range(len(capa_sig.lista_neuronas)):
-                    peso = capa_sig.lista_neuronas[k].pesos[j]
-                    pesos_neurona.append(peso)
+                    peso = capa_sig.lista_neuronas[k].pesos[j];
+                    pesos_neurona.append(peso);
 
-                pesos_sig.append(pesos_neurona)
+                pesos_sig.append(pesos_neurona);
 
-            # Calcular deltas de la capa actual
-            self.capas[i].backward_oculta(pesos_sig, delta_sig)
+            self.capas[i].backward_oculta(pesos_sig, delta_sig);
+
+    def actualizar_pesos_red(self):
+        for i in range(len(self.capas)):
+            self.capas[i].actualizar_pesos_capa(self.eta);
+
+    def cerrar_grafico(self,event):
+        self.grafico_cerrado=True;
+
+
+    def graficar(self,datos,cantidad_rectas):
+        if not hasattr(self,"fig"):
+            plt.ion();
+            self.fig,self.ax=plt.subplots();
+            self.fig.canvas.mpl_connect("close_event",self.cerrar_grafico);
+        self.ax.clear();
+
+        x1 = np.linspace(-2,2,100);
+        primera_capa = self.capas[0];
+
+        for i in range(cantidad_rectas):
+            neurona = primera_capa.lista_neuronas[i];
+            w1 = neurona.pesos[0];
+            w2 = neurona.pesos[1];
+            wb = neurona.pesosBias;
+
+            if abs(w2) > 1e-8:
+                x2 = (wb-w1*x1)/w2;
+                self.ax.plot(x1,x2);
+            else:
+                if abs(w1) > 1e-8:
+                    x_vertical = wb/w1;
+                    self.ax.axvline(x_vertical);
+
+        datos_pos = datos[datos.iloc[:,2] == 1];
+        datos_neg = datos[datos.iloc[:,2] == -1];
+
+        self.ax.scatter(datos_pos.iloc[:,0],datos_pos.iloc[:,1]);
+        self.ax.scatter(datos_neg.iloc[:,0],datos_neg.iloc[:,1]);
+
+        self.ax.set_title("Entrenamiento");
+        self.ax.set_xlabel("x1");
+        self.ax.set_ylabel("x2");
+        self.ax.set_xlim(-2,2);
+        self.ax.set_ylim(-2,2);
+
+        self.fig.canvas.draw_idle();
+        self.fig.canvas.flush_events();
+
+        plt.pause(0.001);
+
+    def visualizador_final(self, aciertos, porcentaje):
+        print("Pesos finales:");
+
+        for i in range(len(self.capas)):
+            print("Capa",i);
+            for j in range(len(self.capas[i].lista_neuronas)):
+                neurona = self.capas[i].lista_neuronas[j];
+                print("Neurona",j,":",neurona.pesos,"Bias:",neurona.pesosBias);
+
+        print("/////////////////////////////////////////////////////");
+        print("Aciertos:",aciertos);
+        print("Porcentaje:",porcentaje);
+
+    def graficar_zona(self,datos):
+        x = np.linspace(-2,2,100);
+        y = np.linspace(-2,2,100);
+
+        X,Y = np.meshgrid(x,y);
+        Z = np.zeros_like(X);
+
+        for i in range(X.shape[0]):
+            for j in range(X.shape[1]):
+                entrada = np.array([X[i,j],Y[i,j]]);
+                salida = self.forward_pass(entrada); 
+
+                if salida>=0:
+                    Z[i,j] = 1;
+
+                else:
+                    Z[i,j] = -1;
+
+        self.ax.contourf(X,Y,Z,levels=[-1,0,1],alpha=0.3);
+
+        datos_pos=datos[datos.iloc[:,2]==1];
+        datos_neg=datos[datos.iloc[:,2]==-1];
+
+        self.ax.scatter(datos_pos.iloc[:,0],datos_pos.iloc[:,1]);
+        self.ax.scatter(datos_neg.iloc[:,0],datos_neg.iloc[:,1]);
+
+        self.ax.set_title("Zona de decisión");
+        self.ax.set_xlabel("x1");
+        self.ax.set_ylabel("x2");
+        self.ax.set_xlim(-2,2);
+        self.ax.set_ylim(-2,2);
+
+        self.fig.canvas.draw_idle();
+        self.fig.canvas.flush_events();
+
+        plt.pause(0.001);
+
+    def entrenar(self, datosEntrenamiento, maxEpocas, porcentajeObjetivo):
+        it = 0;
+        porcentaje = 0;
+
+        while it < maxEpocas and porcentaje < porcentajeObjetivo:
+            for i in range(len(datosEntrenamiento)):
+                fila = datosEntrenamiento.iloc[i];
+
+                #la neurona agrega internamente el bias
+                entrada = np.array([fila.iloc[0], fila.iloc[1]]);
+                deseada = fila.iloc[2];
+
+                self.forward_pass(entrada);
+                self.backward_pass(deseada);
+                self.actualizar_pesos_red();
+           
+            aciertos = 0;
+            for i in range(len(datosEntrenamiento)):
+                fila = datosEntrenamiento.iloc[i];
+
+                entrada = np.array([fila.iloc[0], fila.iloc[1]]);
+                deseada = fila.iloc[2];
+
+                salida = self.forward_pass(entrada);
+
+                prediccion = 1 if salida >= 0 else -1;
+                if prediccion == deseada:
+                    aciertos += 1;
+
+            porcentaje = (aciertos / len(datosEntrenamiento)) * 100;
+
+            print("Epoca:", it,"Aciertos:", aciertos,"Porcentaje:", porcentaje);
+            self.grafico_cerrado=False;
+            for j in range(len(self.capas[0].lista_neuronas)):
+                self.graficar(datosEntrenamiento,j+1);
+
+            self.graficar_zona(datosEntrenamiento);
+
+            while not self.grafico_cerrado:
+                plt.pause(0.1);
+
+            plt.close(self.fig);
+            del self.fig;
+            del self.ax;
+        
+            
+            it += 1;
+        # self.visualizador_final(aciertos, porcentaje);
+
+            
+

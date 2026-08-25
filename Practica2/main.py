@@ -1,15 +1,17 @@
 import neurona as n
 import capa as c
 import red as r
+import pandas as pd
 
-input = [1, 0.5]; #bias interno
-arquitectura = [2,3,2,1];
+
+#Configuracion
+datos = pd.read_csv("XOR_trn.csv");
+cant_entradas = 2;
+arquitectura = [4, 3, 2, 1];
 eta = 0.5;
+epocaMax = 500;
+porcentaje_corte = 95;
 
-prueba = r.red(eta,2,arquitectura);
-prueba.forward_pass(input);
+red = r.red(eta, cant_entradas, arquitectura);
 
-# #prueba salidas por capa
-# for i in range(len(prueba.capas)):
-#     print(prueba.capas[i].output);
-#     print('\n')
+red.entrenar(datos, epocaMax, porcentaje_corte);

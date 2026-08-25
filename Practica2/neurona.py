@@ -14,10 +14,12 @@ class neurona:
         self.delta = 0;
         self.y = 0;
         self.z = 0;
+        self.input = 0;
 
     def forward(self,input):
-        entrada = input.copy(); #agrego el -1 del bias
-        entrada.append(-1);
+        self.input = input.copy(); #guardo el input para actualizar pesos
+        entrada = input.copy(); #por separado para que input quede sin el bias
+        entrada = np.append(entrada, -1);
         pesos_completo = np.append(self.pesos,self.pesosBias);
         self.z = np.dot(pesos_completo, entrada);
         self.y = sigmoidea(self.z);
@@ -37,3 +39,10 @@ class neurona:
 
         self.delta = suma * derivada;
         
+    def actualizar_pesos(self, eta):
+        for i in range (len(self.pesos)):
+            difW = eta * self.delta * self.input[i];
+            self.pesos[i] += difW;
+
+        difWbias = eta * self.delta * (-1);
+        self.pesosBias += difWbias;

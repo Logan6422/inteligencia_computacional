@@ -35,3 +35,8 @@ class capa:
             self.lista_neuronas[i].backward_oculta(delta_sig, pesos_sig[i]);
             delta = self.lista_neuronas[i].delta;
             self.lista_deltas.append(delta);
+
+
+    def actualizar_pesos_capa(self, eta):
+        for i in range(len(self.lista_neuronas)):
+            self.lista_neuronas[i].actualizar_pesos(eta);
