@@ -7,6 +7,7 @@ class red:
     def __init__(self, eta, cantEntradas, arquitectura):
         self.capas = [];
         self.eta = eta;
+        self.cantEntradas = cantEntradas;
 
         cantEntradaIteracion = cantEntradas;
         for i in range(len(arquitectura)):
@@ -20,7 +21,8 @@ class red:
         for i in range(len(self.capas)):
             entradaIteracion = self.capas[i].forward_pass(entradaIteracion);
 
-        return self.capas[-1].output[0]; #salida final (lo dejo en vector por si puede haber mas de una salida)
+        # print(self.capas[-1].output);
+        return self.capas[-1].output; #salida final (lo dejo en vector por si puede haber mas de una salida)
 
     def backward_pass(self, deseada):
         #delta de la capa de salida
@@ -88,13 +90,13 @@ class red:
         self.ax.set_ylabel("x2");
 
         #concent
-        self.ax.set_xlim(-0.5,1.5);
-        self.ax.set_ylim(-0.5,1.5);
+        # self.ax.set_xlim(-0.5,1.5);
+        # self.ax.set_ylim(-0.5,1.5);
 
 
         #xor
-        # self.ax.set_xlim(-2,2);
-        # self.ax.set_ylim(-2,2);
+        self.ax.set_xlim(-2,2);
+        self.ax.set_ylim(-2,2);
 
         self.fig.canvas.draw_idle();
         self.fig.canvas.flush_events();
@@ -175,8 +177,11 @@ class red:
             for i in range(len(datosEntrenamiento)):
                 fila = datosEntrenamiento.iloc[i];
 
+                # print(entrada);
                 #la neurona agrega internamente el bias
-                entrada = np.array([fila.iloc[0], fila.iloc[1]]);
+                # entrada = np.array([fila.iloc[0], fila.iloc[1]]);
+
+                entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
                 deseada = fila.iloc[2];
 
                 self.forward_pass(entrada);

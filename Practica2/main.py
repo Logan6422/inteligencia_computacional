@@ -5,12 +5,12 @@ import pandas as pd
 
 
 #Configuracion
-datos = pd.read_csv("concent_trn.csv");
-cant_entradas = 2;
-arquitectura = [8,4,1];
+datos = pd.read_csv("iris81_trn.csv");
+cant_entradas = 4;
+arquitectura = [2,3];
 eta = 0.5;
 epocaMax = 500;
-porcentaje_corte = 99;
+porcentaje_corte = 90;
 
 red = r.red(eta, cant_entradas, arquitectura);
 
