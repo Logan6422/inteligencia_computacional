@@ -3,19 +3,27 @@ import capa as c
 import red as r
 import pandas as pd
 
-
 #Configuracion
 datos = pd.read_csv("iris81_trn.csv");
 cant_entradas = 4;
 arquitectura = [6,7,3];
-eta = 0.25;
 epocaMax = 500;
-porcentaje_corte = 90;
+porcentaje_corte = 67; # Para Iris conviene un corte alto para ver bien la convergencia
+etas = [0.05, 0.1, 0.25]; 
 
-red = r.red(eta, cant_entradas, arquitectura);
+resultados = {}
 
-printit = True;
-printfinal = True;
-graficar = False;
+for eta in etas:
+    print("Nashe")
+    red = r.red(eta, cant_entradas, arquitectura);
 
-red.entrenar(printit, printfinal, graficar, datos, epocaMax, porcentaje_corte);
+    # Desactivamos los prints por época y el gráfico final para que corra rápido y limpio
+    printit = True; 
+    printfinal = True;
+    graficar = False;
+
+    # Entrenamos y guardamos el historial que devuelve el método
+    hist = red.entrenar(printit, printfinal, graficar, datos, epocaMax, porcentaje_corte);
+    resultados[eta] = hist
+
+

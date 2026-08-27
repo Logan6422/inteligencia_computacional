@@ -62,233 +62,252 @@ class red:
 
             plt.ion()
 
-            self.fig, self.ax = plt.subplots(1, 3, figsize=(15, 5))
+            self.fig, self.ax = plt.subplots(figsize=(8, 6))
 
             self.fig.canvas.mpl_connect(
                 "close_event",
                 self.cerrar_grafico
             )
 
-        # Si no especificamos x3 y x4,
-        # usamos el promedio de los datos
+        self.ax.clear()
+
+        # -------------------------------------------------
+        # x3 y x4 fijos
+        # -------------------------------------------------
+
         if x3 is None:
             x3 = datos.iloc[:, 2].mean()
 
         if x4 is None:
             x4 = datos.iloc[:, 3].mean()
 
-        # Rango de x1 y x2 según los datos
-        x1 = np.linspace(
-            datos.iloc[:, 0].min(),
-            datos.iloc[:, 0].max(),
-            100
+        # -------------------------------------------------
+        # Evaluamos todos los patrones
+        # -------------------------------------------------
+
+        for i in range(len(datos)):
+
+            fila = datos.iloc[i]
+
+            entrada = np.array(
+                fila.iloc[:self.cantEntradas],
+                dtype=float
+            )
+
+            deseada = np.array(
+                fila.iloc[self.cantEntradas:],
+                dtype=float
+            )
+
+            salida = np.array(
+                self.forward_pass(entrada)
+            )
+
+            # ---------------------------------------------
+            # Determinamos clase real
+            # ---------------------------------------------
+
+            if np.array_equal(deseada, [-1, -1, 1]):
+
+                clase_real = "Setosa"
+
+            elif np.array_equal(deseada, [-1, 1, -1]):
+
+                clase_real = "Versicolor"
+
+            elif np.array_equal(deseada, [1, -1, -1]):
+
+                clase_real = "Virginica"
+
+            # ---------------------------------------------
+            # Determinamos clase predicha
+            # ---------------------------------------------
+
+            prediccion = np.argmax(salida)
+
+            if prediccion == 2:
+
+                clase_predicha = "Setosa"
+
+            elif prediccion == 1:
+
+                clase_predicha = "Versicolor"
+
+            else:
+
+                clase_predicha = "Virginica"
+
+            # ---------------------------------------------
+            # ¿Acertó?
+            # ---------------------------------------------
+
+            acierto = clase_real == clase_predicha
+
+            # ---------------------------------------------
+            # Posición
+            # ---------------------------------------------
+
+            x = fila.iloc[0]
+            y = fila.iloc[1]
+
+            # ---------------------------------------------
+            # Color según clase REAL
+            # ---------------------------------------------
+
+            if clase_real == "Setosa":
+
+                color = "red"
+
+            elif clase_real == "Versicolor":
+
+                color = "green"
+
+            else:
+
+                color = "blue"
+
+            # ---------------------------------------------
+            # Marcador según acierto/error
+            # ---------------------------------------------
+
+            if acierto:
+
+                marcador = "o"
+
+            else:
+
+                marcador = "x"
+
+            self.ax.scatter(
+                x,
+                y,
+                c=color,
+                marker=marcador,
+                s=70
+            )
+
+        # -------------------------------------------------
+        # Configuración
+        # -------------------------------------------------
+
+        self.ax.set_xlabel("x1")
+        self.ax.set_ylabel("x2")
+
+        self.ax.set_title(
+            "Distribución y clasificación"
         )
 
-        x2 = np.linspace(
-            datos.iloc[:, 1].min(),
-            datos.iloc[:, 1].max(),
-            100
+        self.ax.set_xlim(
+            datos.iloc[:, 0].min() - 0.2,
+            datos.iloc[:, 0].max() + 0.2
         )
 
-        X, Y = np.meshgrid(x1, x2)
+        self.ax.set_ylim(
+            datos.iloc[:, 1].min() - 0.2,
+            datos.iloc[:, 1].max() + 0.2
+        )
 
-        # Una matriz para cada salida
-        Z = [
-            np.zeros_like(X),
-            np.zeros_like(X),
-            np.zeros_like(X)
-        ]
-
-        # Calculamos la salida de la red para cada punto
-        for i in range(X.shape[0]):
-
-            for j in range(X.shape[1]):
-
-                entrada = np.array([
-                    X[i, j],
-                    Y[i, j],
-                    x3,
-                    x4
-                ])
-
-                salida = self.forward_pass(entrada)
-
-                Z[0][i, j] = salida[0]
-                Z[1][i, j] = salida[1]
-                Z[2][i, j] = salida[2]
-
-        # Clases reales
-        deseadas = datos.iloc[:, 4:7].to_numpy()
-
-        # Cada salida tiene su propio gráfico
-        for k in range(3):
-
-            self.ax[k].clear()
-
-            self.ax[k].contourf(
-                X,
-                Y,
-                Z[k],
-                levels=[-1, 0, 1],
-                alpha=0.3
-            )
-
-            # Dibujamos los puntos según la clase real
-            for i in range(len(datos)):
-
-                x = datos.iloc[i, 0]
-                y = datos.iloc[i, 1]
-
-                if deseadas[i, k] == 1:
-                    self.ax[k].scatter(
-                        x,
-                        y,
-                        marker="o"
-                    )
-                else:
-                    self.ax[k].scatter(
-                        x,
-                        y,
-                        marker="x"
-                    )
-
-            self.ax[k].set_xlabel("x1")
-            self.ax[k].set_ylabel("x2")
-
-            self.ax[k].set_title(
-                "Salida y" + str(k + 1)
-            )
-
-            self.ax[k].set_xlim(
-                datos.iloc[:, 0].min()-2,
-                datos.iloc[:, 0].max()+2
-            )
-
-            self.ax[k].set_ylim(
-                datos.iloc[:, 1].min()-2,
-                datos.iloc[:, 1].max()+2
-            )
+        self.ax.grid(True)
 
         self.fig.tight_layout()
 
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
 
-        plt.pause(0.0001)
-
-    def visualizador_final(self, it, aciertos, porcentaje, datos):
-        print("Pesos finales:");
-        for i in range(len(self.capas)):
-            print("Capa", i);
-            for j in range(len(self.capas[i].lista_neuronas)):
-                neurona = self.capas[i].lista_neuronas[j];
-                print("Neurona", j, ":", neurona.pesos,"Bias:", neurona.pesosBias);
-            print("\n");
-        print("\n");
-
-        print("/////////////////////////////////////////////////////");
-        print("\n");
-
-        print("Aciertos:", aciertos);
-        print("\n");
-
-        print("Porcentaje:", porcentaje);
-        print("\n");
-
-        print("Epocas:", it);
-        print("\n");
-
-        #Visualizacion final
-        plt.ion();
-        self.fig, self.ax = plt.subplots();
-        cantidad_rectas = len(self.capas[0].lista_neuronas);
-
-        self.graficar(datos, cantidad_rectas);
-        self.graficar_zona(datos);
-
-        self.ax.set_title("Resultado final");
-        self.fig.canvas.draw_idle();
-        self.fig.canvas.flush_events();
-
-        print("Grafico final");
-        plt.ioff();
-        plt.show();
-
-    def graficar_zona(self,datos):
-        x = np.linspace(-2,2,100);
-        y = np.linspace(-2,2,100);
-
-        X,Y = np.meshgrid(x,y);
-        Z = np.zeros_like(X);
-
-        for i in range(X.shape[0]):
-            for j in range(X.shape[1]):
-                entrada = np.array([X[i,j],Y[i,j]]);
-                salida = self.forward_pass(entrada); 
-
-                if salida>=0:
-                    Z[i,j] = 1;
-
-                else:
-                    Z[i,j] = -1;
-
-        self.ax.contourf(X,Y,Z, levels=[-1,0,1], colors=["red", "blue"], alpha=0.3);
-
-
-        self.ax.set_title("Zona de decisión");
-
-        self.fig.canvas.draw_idle();
-        self.fig.canvas.flush_events();
-
-        plt.pause(0.0001);
+        plt.pause(0.001)
 
     def entrenar(self, printIt, printFinal, graficar, datosEntrenamiento, maxEpocas, porcentajeObjetivo):
-        it = 0;
-        porcentaje = 0;
-
-        while it < maxEpocas and porcentaje < porcentajeObjetivo:
-            for i in range(len(datosEntrenamiento)):
-                fila = datosEntrenamiento.iloc[i];
-
-                # print(entrada);
-                #la neurona agrega internamente el bias
-                # entrada = np.array([fila.iloc[0], fila.iloc[1]]);
-
-                entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
-                deseada = np.array(fila.iloc[self.cantEntradas:],dtype=float);
-                # deseada = fila.iloc[2];
-
-                self.forward_pass(entrada);
-                self.backward_pass(deseada);
-                self.actualizar_pesos_red();
-           
-            aciertos = 0;
-            for i in range(len(datosEntrenamiento)):
-                fila = datosEntrenamiento.iloc[i];
-
-                entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
-                deseada = np.array(fila.iloc[self.cantEntradas:],dtype=float);
-
-                salida = self.forward_pass(entrada);
-                prediccion = np.where(np.array(salida) >= 0, 1, -1)
-                if np.array_equal(prediccion, deseada):
-                    aciertos += 1
-
-            porcentaje = (aciertos / len(datosEntrenamiento)) * 100;
-
-            if(printIt):
-                print("Epoca:", it,"Aciertos:", aciertos,"Porcentaje:", porcentaje);
-
-            if(graficar):
-                self.grafico_cerrado=False;
-                for j in range(len(self.capas[0].lista_neuronas)):
-                    self.graficar(datosEntrenamiento,j+1);
-
-        
-            it += 1;
-
-        if(printFinal):
-            self.visualizador_final(it,aciertos,porcentaje,datosEntrenamiento);
-
+            it = 0;
+            porcentaje = 0;
             
+            # NUEVO: Listas para guardar el historial de errores por época
+            hist_error_cuadratico = []
+            hist_error_clasificacion = []
 
+            while it < maxEpocas and porcentaje < porcentajeObjetivo:
+                error_cuadratico_epoca = 0
+                
+                # Loop de entrenamiento
+                for i in range(len(datosEntrenamiento)):
+                    fila = datosEntrenamiento.iloc[i];
+
+                    entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
+                    deseada = np.array(fila.iloc[self.cantEntradas:],dtype=float);
+
+                    salida = self.forward_pass(entrada);
+                    
+                    # NUEVO: Calcular error cuadrático instantáneo: xi = 1/2 * sum(e_j^2)
+                    e = deseada - np.array(salida)
+                    error_cuadratico_epoca += 0.5 * np.sum(e**2)
+                    
+                    self.backward_pass(deseada);
+                    self.actualizar_pesos_red();
+            
+                # Loop de evaluación (aciertos)
+                aciertos = 0;
+                for i in range(len(datosEntrenamiento)):
+                    fila = datosEntrenamiento.iloc[i];
+
+                    entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
+                    deseada = np.array(fila.iloc[self.cantEntradas:],dtype=float);
+
+                    salida = self.forward_pass(entrada);
+                    prediccion = np.where(np.array(salida) >= 0, 1, -1)
+                    if np.array_equal(prediccion, deseada):
+                        aciertos += 1
+
+                porcentaje = (aciertos / len(datosEntrenamiento)) * 100;
+                error_clasificacion_epoca = 100 - porcentaje # NUEVO
+                
+                # NUEVO: Guardar en los historiales
+                hist_error_cuadratico.append(error_cuadratico_epoca)
+                hist_error_clasificacion.append(error_clasificacion_epoca)
+
+                if(printIt):
+                    print("Epoca:", it, "Aciertos:", aciertos, "Porcentaje:", round(porcentaje,2), "Error cuad:", round(error_cuadratico_epoca, 4));
+
+                if graficar:
+                    self.grafico_cerrado = False
+                    self.graficar(datosEntrenamiento)
+                   
+                it += 1;
+
+            if(printFinal):
+                self.graficar(datosEntrenamiento)
+
+            plt.ioff()
+            plt.show()
+            # NUEVO: Devolver el diccionario con los historiales para graficar
+            return {
+                "epocas": list(range(it)),
+                "error_cuadratico": hist_error_cuadratico,
+                "error_clasificacion": hist_error_clasificacion
+            }
+
+
+    # NUEVO: Función independiente al final de red.py (fuera de la clase)
+    def graficar_curvas(resultados_por_eta):
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+
+        for eta, hist in resultados_por_eta.items():
+            ax1.plot(hist["epocas"], hist["error_cuadratico"], label=f"eta={eta}")
+            ax2.plot(hist["epocas"], hist["error_clasificacion"], label=f"eta={eta}")
+
+        ax1.set_title("Error cuadrático total (ξ)")
+        ax1.set_xlabel("Épocas")
+        ax1.set_ylabel("ξ")
+        ax1.legend()
+        ax1.grid(True)
+
+        ax2.set_title("Error de clasificación")
+        ax2.set_xlabel("Épocas")
+        ax2.set_ylabel("%")
+        ax2.legend()
+        ax2.grid(True)
+
+        plt.tight_layout()
+        plt.show()
+        
+                
+    
+    
