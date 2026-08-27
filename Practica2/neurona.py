@@ -7,6 +7,9 @@ def sigmoidea(z):
 def derivada_sigmoidea(y):
     return 0.5*(1 + y)*(1-y)
 
+#def combinatoria(y, deseada):
+    #return 1 if deseada == y else 
+
 class neurona:
     def __init__(self, cantEntradas):
         self.pesos = np.random.uniform(-0.5,0.5,cantEntradas);
@@ -21,12 +24,21 @@ class neurona:
         entrada = input.copy(); #por separado para que input quede sin el bias
         entrada = np.append(entrada, -1);
         pesos_completo = np.append(self.pesos,self.pesosBias);
+
+        # if(len(pesos_completo) != len(entrada)):
+        #     print('/////////////')
+        #     print(len(pesos_completo))
+        #     print(len(entrada))
+        #     print('/////////////')
+        
         self.z = np.dot(pesos_completo, entrada);
+        #self.prevY
         self.y = sigmoidea(self.z);
+        #self.y = combinatoria(self.prevY);
         return self.y;
 
     def backward(self, deseada):
-        error = (deseada - self.y);
+        error = (deseada - self.y); #DESEADA[i]
         derivada = derivada_sigmoidea(self.y);
         self.delta = error*derivada;
 

@@ -14,6 +14,7 @@ class red:
             new_capa = c.capa(arquitectura[i],cantEntradaIteracion);
             self.capas.append(new_capa);
             cantEntradaIteracion = len(new_capa.lista_neuronas);
+            
 
 
     def forward_pass(self, input):
@@ -27,7 +28,7 @@ class red:
     def backward_pass(self, deseada):
         #delta de la capa de salida
         self.capas[-1].backward_final(deseada);
-
+        
         #desde la penultima capa hasta la primera
         for i in range(len(self.capas) - 2, -1, -1):
             capa_sig = self.capas[i + 1];
@@ -55,53 +56,125 @@ class red:
         self.grafico_cerrado=True;
 
 
-    def graficar(self,datos,cantidad_rectas):
-        if not hasattr(self,"fig"):
-            plt.ion();
-            self.fig,self.ax=plt.subplots();
-            self.fig.canvas.mpl_connect("close_event",self.cerrar_grafico);
-        self.ax.clear();
+    def graficar(self, datos, x3=None, x4=None):
 
-        x1 = np.linspace(-2,2,100);
-        primera_capa = self.capas[0];
+        if not hasattr(self, "fig"):
 
-        for i in range(cantidad_rectas):
-            neurona = primera_capa.lista_neuronas[i];
-            w1 = neurona.pesos[0];
-            w2 = neurona.pesos[1];
-            wb = neurona.pesosBias;
+            plt.ion()
 
-            if abs(w2) > 1e-8:
-                x2 = (wb-w1*x1)/w2;
-                self.ax.plot(x1,x2);
-            else:
-                if abs(w1) > 1e-8:
-                    x_vertical = wb/w1;
-                    self.ax.axvline(x_vertical);
+            self.fig, self.ax = plt.subplots(1, 3, figsize=(15, 5))
 
-        datos_pos = datos[datos.iloc[:,2] == 1];
-        datos_neg = datos[datos.iloc[:,2] == -1];
+            self.fig.canvas.mpl_connect(
+                "close_event",
+                self.cerrar_grafico
+            )
 
-        self.ax.scatter(datos_pos.iloc[:,0],datos_pos.iloc[:,1]);
-        self.ax.scatter(datos_neg.iloc[:,0],datos_neg.iloc[:,1]);
+        # Si no especificamos x3 y x4,
+        # usamos el promedio de los datos
+        if x3 is None:
+            x3 = datos.iloc[:, 2].mean()
 
-        self.ax.set_title("Entrenamiento");
-        self.ax.set_xlabel("x1");
-        self.ax.set_ylabel("x2");
+        if x4 is None:
+            x4 = datos.iloc[:, 3].mean()
 
-        #concent
-        # self.ax.set_xlim(-0.5,1.5);
-        # self.ax.set_ylim(-0.5,1.5);
+        # Rango de x1 y x2 según los datos
+        x1 = np.linspace(
+            datos.iloc[:, 0].min(),
+            datos.iloc[:, 0].max(),
+            100
+        )
 
+        x2 = np.linspace(
+            datos.iloc[:, 1].min(),
+            datos.iloc[:, 1].max(),
+            100
+        )
 
-        #xor
-        self.ax.set_xlim(-2,2);
-        self.ax.set_ylim(-2,2);
+        X, Y = np.meshgrid(x1, x2)
 
-        self.fig.canvas.draw_idle();
-        self.fig.canvas.flush_events();
+        # Una matriz para cada salida
+        Z = [
+            np.zeros_like(X),
+            np.zeros_like(X),
+            np.zeros_like(X)
+        ]
 
-        plt.pause(0.001);
+        # Calculamos la salida de la red para cada punto
+        for i in range(X.shape[0]):
+
+            for j in range(X.shape[1]):
+
+                entrada = np.array([
+                    X[i, j],
+                    Y[i, j],
+                    x3,
+                    x4
+                ])
+
+                salida = self.forward_pass(entrada)
+
+                Z[0][i, j] = salida[0]
+                Z[1][i, j] = salida[1]
+                Z[2][i, j] = salida[2]
+
+        # Clases reales
+        deseadas = datos.iloc[:, 4:7].to_numpy()
+
+        # Cada salida tiene su propio gráfico
+        for k in range(3):
+
+            self.ax[k].clear()
+
+            self.ax[k].contourf(
+                X,
+                Y,
+                Z[k],
+                levels=[-1, 0, 1],
+                alpha=0.3
+            )
+
+            # Dibujamos los puntos según la clase real
+            for i in range(len(datos)):
+
+                x = datos.iloc[i, 0]
+                y = datos.iloc[i, 1]
+
+                if deseadas[i, k] == 1:
+                    self.ax[k].scatter(
+                        x,
+                        y,
+                        marker="o"
+                    )
+                else:
+                    self.ax[k].scatter(
+                        x,
+                        y,
+                        marker="x"
+                    )
+
+            self.ax[k].set_xlabel("x1")
+            self.ax[k].set_ylabel("x2")
+
+            self.ax[k].set_title(
+                "Salida y" + str(k + 1)
+            )
+
+            self.ax[k].set_xlim(
+                datos.iloc[:, 0].min()-2,
+                datos.iloc[:, 0].max()+2
+            )
+
+            self.ax[k].set_ylim(
+                datos.iloc[:, 1].min()-2,
+                datos.iloc[:, 1].max()+2
+            )
+
+        self.fig.tight_layout()
+
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+
+        plt.pause(0.0001)
 
     def visualizador_final(self, it, aciertos, porcentaje, datos):
         print("Pesos finales:");
@@ -182,7 +255,8 @@ class red:
                 # entrada = np.array([fila.iloc[0], fila.iloc[1]]);
 
                 entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
-                deseada = fila.iloc[2];
+                deseada = np.array(fila.iloc[self.cantEntradas:],dtype=float);
+                # deseada = fila.iloc[2];
 
                 self.forward_pass(entrada);
                 self.backward_pass(deseada);
@@ -192,14 +266,13 @@ class red:
             for i in range(len(datosEntrenamiento)):
                 fila = datosEntrenamiento.iloc[i];
 
-                entrada = np.array([fila.iloc[0], fila.iloc[1]]);
-                deseada = fila.iloc[2];
+                entrada = np.array(fila.iloc[:self.cantEntradas], dtype=float);
+                deseada = np.array(fila.iloc[self.cantEntradas:],dtype=float);
 
                 salida = self.forward_pass(entrada);
-
-                prediccion = 1 if salida >= 0 else -1;
-                if prediccion == deseada:
-                    aciertos += 1;
+                prediccion = np.where(np.array(salida) >= 0, 1, -1)
+                if np.array_equal(prediccion, deseada):
+                    aciertos += 1
 
             porcentaje = (aciertos / len(datosEntrenamiento)) * 100;
 
