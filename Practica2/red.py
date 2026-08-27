@@ -44,8 +44,10 @@ class red:
             self.capas[i].backward_oculta(pesos_sig, delta_sig);
 
     def actualizar_pesos_red(self):
+        
         for i in range(len(self.capas)):
             self.capas[i].actualizar_pesos_capa(self.eta);
+    
 
     def cerrar_grafico(self,event):
         self.grafico_cerrado=True;
@@ -84,27 +86,58 @@ class red:
         self.ax.set_title("Entrenamiento");
         self.ax.set_xlabel("x1");
         self.ax.set_ylabel("x2");
-        self.ax.set_xlim(-2,2);
-        self.ax.set_ylim(-2,2);
+
+        #concent
+        self.ax.set_xlim(-0.5,1.5);
+        self.ax.set_ylim(-0.5,1.5);
+
+
+        #xor
+        # self.ax.set_xlim(-2,2);
+        # self.ax.set_ylim(-2,2);
 
         self.fig.canvas.draw_idle();
         self.fig.canvas.flush_events();
 
         plt.pause(0.001);
 
-    def visualizador_final(self,it, aciertos, porcentaje):
+    def visualizador_final(self, it, aciertos, porcentaje, datos):
         print("Pesos finales:");
-
         for i in range(len(self.capas)):
-            print("Capa",i);
+            print("Capa", i);
             for j in range(len(self.capas[i].lista_neuronas)):
                 neurona = self.capas[i].lista_neuronas[j];
-                print("Neurona",j,":",neurona.pesos,"Bias:",neurona.pesosBias);
+                print("Neurona", j, ":", neurona.pesos,"Bias:", neurona.pesosBias);
+            print("\n");
+        print("\n");
 
         print("/////////////////////////////////////////////////////");
-        print("Aciertos:",aciertos);
-        print("Porcentaje:",porcentaje);
+        print("\n");
+
+        print("Aciertos:", aciertos);
+        print("\n");
+
+        print("Porcentaje:", porcentaje);
+        print("\n");
+
         print("Epocas:", it);
+        print("\n");
+
+        #Visualizacion final
+        plt.ion();
+        self.fig, self.ax = plt.subplots();
+        cantidad_rectas = len(self.capas[0].lista_neuronas);
+
+        self.graficar(datos, cantidad_rectas);
+        self.graficar_zona(datos);
+
+        self.ax.set_title("Resultado final");
+        self.fig.canvas.draw_idle();
+        self.fig.canvas.flush_events();
+
+        print("Grafico final");
+        plt.ioff();
+        plt.show();
 
     def graficar_zona(self,datos):
         x = np.linspace(-2,2,100);
@@ -124,7 +157,7 @@ class red:
                 else:
                     Z[i,j] = -1;
 
-        self.ax.contourf(X,Y,Z,levels=[-1,0,1],alpha=0.3);
+        self.ax.contourf(X,Y,Z, levels=[-1,0,1], colors=["red", "blue"], alpha=0.3);
 
 
         self.ax.set_title("Zona de decisión");
@@ -132,7 +165,7 @@ class red:
         self.fig.canvas.draw_idle();
         self.fig.canvas.flush_events();
 
-        plt.pause(0.001);
+        plt.pause(0.0001);
 
     def entrenar(self, printIt, printFinal, graficar, datosEntrenamiento, maxEpocas, porcentajeObjetivo):
         it = 0;
@@ -173,19 +206,11 @@ class red:
                 for j in range(len(self.capas[0].lista_neuronas)):
                     self.graficar(datosEntrenamiento,j+1);
 
-                self.graficar_zona(datosEntrenamiento);
-
-                while not self.grafico_cerrado:
-                    plt.pause(0.1);
-
-                plt.close(self.fig);
-                del self.fig;
-                del self.ax;
         
             it += 1;
 
         if(printFinal):
-            self.visualizador_final(it,aciertos, porcentaje);
+            self.visualizador_final(it,aciertos,porcentaje,datosEntrenamiento);
 
             
 

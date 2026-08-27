@@ -10,12 +10,12 @@ cant_entradas = 2;
 arquitectura = [8,4,1];
 eta = 0.5;
 epocaMax = 500;
-porcentaje_corte = 95;
+porcentaje_corte = 99;
 
 red = r.red(eta, cant_entradas, arquitectura);
 
 printit = True;
-printfinal = False;
+printfinal = True;
 graficar = True;
 
 red.entrenar(printit, printfinal, graficar, datos, epocaMax, porcentaje_corte);
