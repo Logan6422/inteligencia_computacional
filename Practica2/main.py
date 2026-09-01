@@ -14,7 +14,6 @@ etas = [0.05, 0.1, 0.25];
 resultados = {}
 
 for eta in etas:
-    print("Nashe")
     red = r.red(eta, cant_entradas, arquitectura);
 
     # Desactivamos los prints por época y el gráfico final para que corra rápido y limpio
