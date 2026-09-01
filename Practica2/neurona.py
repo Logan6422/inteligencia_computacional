@@ -1,6 +1,8 @@
 import numpy as np
+#iris
 
 #b = 1
+
 def sigmoidea(z):
     return (2/(1 + np.exp(-z)))-1
 
