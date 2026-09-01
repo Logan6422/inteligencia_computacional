@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 
 it = 0;
 epocaMax = 5;
-datos = pd.read_csv("XOR_trn.csv");
+datos = pd.read_csv("OR_90_trn.csv");
 datos["bias"] = -1;
 porcentaje_aciertos = 0;
 pesos = np.random.uniform(-0.5,0.5,3);
 cantidad_entradas = len(datos);
-eta = 0.005;
+eta = 0.01;
 print("Pesos iniciales:", pesos)
 
 plt.ion(); #modo interactivo
@@ -34,7 +34,7 @@ x2 = (pesos[2]/pesos[1]) - (pesos[0]/pesos[1])*x1;
 linea, = ax.plot(x1, x2, color="red");
 
 
-while (it < epocaMax and porcentaje_aciertos < 90):
+while (it < epocaMax and porcentaje_aciertos < 97):
     sum = 0;
     for i in range(cantidad_entradas):
         fila = datos.iloc[i];
