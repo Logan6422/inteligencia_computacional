@@ -13,6 +13,7 @@ class capa:
             self.lista_neuronas.append(neu);
 
 
+
     def forward_pass(self, input):
         self.output = [];
         for i in range(len(self.lista_neuronas)):
@@ -24,7 +25,7 @@ class capa:
     def backward_final(self, deseada):
         self.lista_deltas = [];
         for i in range(len(self.lista_neuronas)):
-            self.lista_neuronas[i].backward(deseada);
+            self.lista_neuronas[i].backward(deseada[i]);
             delta = self.lista_neuronas[i].delta;
             self.lista_deltas.append(delta);
 
