@@ -86,27 +86,6 @@ import matplotlib.pyplot as plt
 
 ###############################################################################################################
 # Ejercicio 3 Iris
-# datos = pd.read_csv("iris81_trn.csv");
-# cant_entradas = 4;
-# arquitectura = [6,7,3];
-# epocaMax = 500;
-# porcentaje_corte = 67;
-# etas = [0.05, 0.1, 0.25]; 
-
-# resultados = {}
-
-# for eta in etas:
-#     red = r.red(eta, cant_entradas, arquitectura);
-#     printit = True; 
-#     printfinal = True;
-#     graficar = False;
-
-#     # Entrenamos y guardamos el historial que devuelve el metodo
-#     hist = red.entrenar(printit, printfinal, graficar, datos, epocaMax, porcentaje_corte);
-#     resultados[eta] = hist
-
-# r.graficar_curvas(resultados)
-
 datos_trn = pd.read_csv("iris81_trn.csv");
 datos_tst = pd.read_csv("iris81_tst.csv");
 cant_entradas = 4;
@@ -127,7 +106,7 @@ for eta in etas:
     hist = red.entrenar(printit, printfinal, graficar, datos_trn, epocaMax, porcentaje_corte);
     resultados[eta] = hist;
 
-    # desempeño en test para esta eta
+    # test
     aciertos = 0;
     for i in range(len(datos_tst)):
         fila = datos_tst.iloc[i];
