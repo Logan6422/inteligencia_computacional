@@ -214,3 +214,24 @@ class red:
 
             
 
+def graficar_curvas(resultados_por_eta):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6,4));
+
+    for eta, hist in resultados_por_eta.items():
+        ax1.plot(hist["epocas"], hist["error_cuadratico"], label="eta=" + str(eta));
+        ax2.plot(hist["epocas"], hist["error_clasificacion"], label="eta=" + str(eta));
+
+    ax1.set_title("Error cuadrático total (ξ)");
+    ax1.set_xlabel("épocas");
+    ax1.set_ylabel("ξ");
+    ax1.legend();
+    ax1.grid(True);
+
+    ax2.set_title("Error de clasificación");
+    ax2.set_xlabel("épocas");
+    ax2.set_ylabel("%");
+    ax2.legend();
+    ax2.grid(True);
+
+    plt.tight_layout();
+    plt.show();
