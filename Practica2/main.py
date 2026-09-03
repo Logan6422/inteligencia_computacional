@@ -8,16 +8,16 @@ import numpy as np
 #Configuracion
 datos = pd.read_csv("concent_trn.csv");
 cant_entradas = 2;
-arquitectura = [8,4,1];
-eta = 0.5;
-epocaMax = 500;
+arquitectura = [4,1];
+eta = 0.02;
+epocaMax = 1000;
 porcentaje_corte = 90;
 
 red = r.red(eta, cant_entradas, arquitectura);
 
 printit = True;
 printfinal = True;
-graficar = True;
+graficar = False;
 
 red.entrenar(printit, printfinal, graficar, datos, epocaMax, porcentaje_corte);
 
@@ -37,7 +37,7 @@ for i in range(len(datos_tst)):
     if prediccion == deseada:
         aciertos_tst += 1
 
-        print(aciertos_tst)
-        print('//////////////')
+        # print(aciertos_tst)
+        # print('//////////////')
 
 
