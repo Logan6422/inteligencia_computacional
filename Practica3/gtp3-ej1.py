@@ -70,11 +70,10 @@ for tr_index, tst_index in kf5.split(x):
     kfolds5.append(mlp[1].score(x_tst, y_tst)) # mlp[1].score lo hace sin necedidad de predict + accuracy_score
     iteraciones5.append(mlp[1].n_iter_)
 
-print(f"\nKFolds_5 = {kfolds5}")
-print(f"Iteraciones por fold: {iteraciones5}")
-
 media_kfolds5 = np.mean(kfolds5)
 var_kfolds5 = np.var(kfolds5)
+print(f"\nKFolds_5 = {kfolds5}")
+print(f"Iteraciones por fold: {iteraciones5}")
 
 # Validacion con 10 folds
 kf10 = KFold(
