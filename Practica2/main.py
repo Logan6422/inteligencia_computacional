@@ -9,8 +9,8 @@ import numpy as np
 datos = pd.read_csv("concent_trn.csv");
 cant_entradas = 2;
 arquitectura = [4,1];
-eta = 0.02;
-epocaMax = 1000;
+eta = 0.2;
+epocaMax = 2500;
 porcentaje_corte = 90;
 
 red = r.red(eta, cant_entradas, arquitectura);
