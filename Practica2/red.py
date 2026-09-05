@@ -125,7 +125,7 @@ class red:
     def graficar_zona(self, datos, titulo="Zona de decisión"):
         primera = not hasattr(self, "fig_zona");
         if primera:
-            self.fig_zona, self.ax_zona = plt.subplots(figsize=(8, 6));
+            self.fig_zona, self.ax_zona = plt.subplots(figsize=(6, 4));
 
         self.ax_zona.clear();
         margen = 0.2;
@@ -161,7 +161,7 @@ class red:
 
         self.fig_zona.canvas.draw();
         self.fig_zona.canvas.flush_events();
-        plt.pause(0.5 if primera else 0.001);   # la 1ra vez necesita más tiempo para crear y pintar la ventana
+        plt.pause(0.001 if primera else 0.001);   # la 1ra vez necesita más tiempo para crear y pintar la ventana
 
     def entrenar(self, printIt, printFinal, graficar, datosEntrenamiento, maxEpocas, porcentajeObjetivo):
             it = 0;
@@ -225,7 +225,7 @@ class red:
             }
 
 def graficar_curvas(resultados_por_eta):
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6));
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6, 4));
 
     for eta, hist in resultados_por_eta.items():
         ax1.plot(hist["epocas"], hist["error_cuadratico"], label="eta=" + str(eta));

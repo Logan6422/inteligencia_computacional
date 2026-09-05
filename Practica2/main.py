@@ -6,7 +6,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 #Configuracion
-
 # Ejercicio 1 XOR
 # datos_trn = pd.read_csv("XOR_trn.csv")
 # datos_tst = pd.read_csv("XOR_tst.csv")
@@ -48,9 +47,9 @@ import matplotlib.pyplot as plt
 # datos_tst = pd.read_csv("concent_tst.csv")
 # cant_entradas = 2
 # arquitectura = [2, 8, 1]
-# epocaMax = 21
+# epocaMax = 200
 # porcentaje_corte = 100
-# eta = 0.9
+# eta = 0.5
 # red = r.red(eta, cant_entradas, arquitectura)
 # printit = True
 # printfinal = False # graficar_final es exclusivo de Iris
@@ -90,7 +89,7 @@ datos_trn = pd.read_csv("iris81_trn.csv");
 datos_tst = pd.read_csv("iris81_tst.csv");
 cant_entradas = 4;
 arquitectura = [6,7,3];
-epocaMax = 50;
+epocaMax = 200;
 porcentaje_corte = 100;
 etas = [0.05, 0.1, 0.25];
 
