@@ -46,8 +46,8 @@ var_adaBoost = np.var(adaBoost_scores)
 
 print(f"\nBagging = {bagging_scores}")
 print(f"Media Bagging: {media_bagging:.2%}")
-print(f"Varianza Bagging: {var_bagging:.2%}")
+print(f"Varianza Bagging: {var_bagging:.6%}")
 
 print(f"\nAdaBoost = {adaBoost_scores}")
 print(f"Media AdaBoost: {media_adaBoost:.2%}")
-print(f"Varianza AdaBoost: {var_adaBoost:.2%}")
+print(f"Varianza AdaBoost: {var_adaBoost:.6%}")
