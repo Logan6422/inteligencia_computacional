@@ -83,6 +83,13 @@ for valor_k in k:
         kmedias.inertia_
     )#Compactitud / inercia?
 
+    print(f"\nk = {valor_k}")
+    print(f"  Silhouette:        {resultados_silhouette[-1]:.4f}")
+    print(f"  Calinski-Harabasz: {resultados_calinski[-1]:.4f}")
+    print(f"  Davies-Bouldin:    {resultados_davies[-1]:.4f}")
+    print(f"  Fowlkes-Mallows:   {resultados_fowlkes[-1]:.4f}")
+    print(f"  Inercia:           {resultados_inercia[-1]:.4f}")
+
 
 fig, ax = plt.subplots()
 
