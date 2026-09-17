@@ -1,0 +1,117 @@
+Parcial oral (2 preguntas)
+Primera mas general
+ej:
+	- Algoritmo de entrenamiento de red de hopfield
+	- Arquitectura red de hopfield - algoritmo de entrenamiento
+	-
+
+Segunda mas compleja
+ej:
+	- Ecuacion de actualizacion de pesos del SOM (formula)
+	- Como regular entorno a medida que se entrena el SOM
+	- Que objeto matematico es cada termino de la ecuacion.
+-----------------------------------------------------------------------------
+ej desarrollo matematico:
+	- Encontra la ecuacion de actualizacion de peso para la ultima capa 
+	del perceptron multicapa con funcion de actualizacion sigmoidea
+	o solo para capa oculta
+	- Pseudocodigo con formulas bien aprendidas
+Temas por diapo:
+	
+PERCEPTRON SIMPLE:
+	- Perceptron simple basico
+	- Deducir perceptron simple sigmoidea
+	- Cual es la importancia del sesgo / bias?
+	- Deduccion metodo de gradiente lineal y funcion de activacion sigmoidea derivada
+
+PROBLEMA XOR 3 NEURONAS:
+	- Por que no funciona un perceptron simple con un XOR?
+	- Hacer desarrollo de 3 neuronas para resolver un XOR
+	- Regiones de decision (Como separan los espacios de soluciones con distintas cantidad de capa / errores
+	- Que tipo de problemas pueden resolverse con cada cantidad de neuronas divisiones
+	- BackPropagation deduccion (IMPORTANTE)
+	- Regla de la cadena (Practicar), que cosas se simplifican por la sumatoria (1 termino)
+	- Concepto de gradiente de error local instantaneo (Por que local, instantaneo, para que sirve, que rol cumple)
+	- Derivada de la funcion sigmoidea (FORMULA)
+	- Calculo del delta de la capa 2 / sumatoria sobre k 
+	- Reemplzar gradiente por los pesos de la capa anterior (RetroPropagacion)
+	- Ecuacion general de retropropagacion explicacion terminos
+
+RADIAL BASES:
+	- Modelos de las redes con base radial 
+	- Dibujo de arquitectura
+	- Modelo matematico
+	- Gaussiana para que se usa, que es, como funciona
+	- Alternativas de modelos de entrenamiento (Metodos no supervisados) (ecuacion de optimizacion explicacion)
+	- K-medias por lotes ecuaciones (memorizar) (Kmedias online no entra)
+	- Ventajas y desventajas respecto a MLP 
+	- Concepto de gaussianas N-dimensionales (matriz de covarianza / diagonal constante (Esfera) - orientacion elipse)
+	
+REDES DINAMICAS: 
+	- Concepto/ cuando red es dinamica / estatica
+	- Que problemas se resuelven con dinamica
+	- Que problemas no se deberian resolver con estaticas
+	- Relacion con recurrentes
+
+HOPFIELD: 
+	- Arquitectura
+	- Mapa de energia (Patrones espureos)
+	- Aprendizaje hebbiano, que significa, por que algo es hebbiano  
+	- Formulas (detalle fino de indices)
+	- Capacidad de entrenamiento formula 
+	- Recuperacion (dinamica) 
+	- Arquitectura con recurrencia total (solo conceptual no deduccion de formulas)(Ver la deduccion para entender mejor MLP)
+	- Como expandir red de backpropagation en recurrencia total
+	- TDNN conceptual (no dinamica que se usa para modelar problemas dinamicos)
+
+SOM:
+	- Arquitectura y algoritmo de entrenamiento SOM
+	- Vecindades, que son y por que son importantes
+	- Funciones / ordenamiento topologico (central) 
+	- Que es el ordenamiento topologico y por que existe en este algoritmo (diferencia con k-medias)
+	- Etapas del algoritmo de entrenamiento
+
+LVQ: 
+	- Conceptual 
+	- Diferencia de supervisado y no supervisado
+	- No tiene ordenamiento topologico (por que?) (por que es supervisado y donde entra la supervision)
+	- Algoritmo (como se asocian clases a cada centroide) 
+	
+CAPACIDAD DE GENERALIZACION:
+	// trn,tst
+	// MLP()
+	// end
+	// prueba(tst) 
+	// autoajuste de parametros a mano (perdida de capacidad de generalizacion)
+	// normalizacion de datos de trn y tst
+
+	- early stopping
+	- superficies de error
+	- sobreentrenamiento
+	- validacion cruzada
+	- metricas (poco comun)
+	- (desbalance de clase con accuracy alta) (medir sensibilidad en vez de accuracy)
+
+APRENDIZAJE AUTOMATICO NO NEURONAL:
+	- concepto de cada algoritmo
+	- ventajas y desventajas de cada algoritmo
+	- en que caso aplicarlo, en que caso queda limitado
+	- kmedias (crece linealmente con cada dato) / que significan los distintos k (como elegirlo)
+	- Arboles de decision conceptual (dimension umbral / discreto en apunte)
+	- Concepto de impureza (que busco con la impureza / que decision importante se desprende de esa decision)
+	- Impureza de clasificacion (formula e interpretacion)
+	- Entropia
+	- Naive-Bayes (concepto, no formulas) (solo formula productoria) (maximo de productoria para cada clase)
+	- SVM (Idea recta / kernel / vector soporte / planos) truco del kernel
+	- Ensambles concepto (no algoritmo) (Que es stacking / bagging / adaboost)
+	- (ADABOOST = Cambio peso a medida que agrego miembros al ensamble)
+	- Idea de boosting sin algoritmo
+	- Convergencias de ensamble (por que son tan buenos) Gradient boosting (mejor algoritmo tabular)
+
+CLUSTERING:
+	- Conceptual
+	- Ideas de mtricas sin detalle fino (formulas basicas)
+	- Matriz de contingencia 
+	- Nada de indice de rand en adelante (externas)
+	- Metodo del codo para k optimo 
+
