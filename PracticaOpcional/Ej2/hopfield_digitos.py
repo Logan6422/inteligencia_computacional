@@ -119,7 +119,7 @@ size = len(patrones[0]);
 
 W = np.zeros((size, size));
 
-patrones = patrones[:8]; #maximo de patrones para ruido 1
+patrones = patrones[:5]; #maximo de patrones para ruido 1
 #Entrenamiento Hebbiano
 for patron in patrones:
     aporte = np.outer(patron, patron);

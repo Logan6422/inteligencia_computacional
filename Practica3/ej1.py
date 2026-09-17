@@ -85,7 +85,7 @@ for train_index, test_index in kf10.split(x):
     y_train = y[train_index];
     y_test = y[test_index];
 
-    redKFOLD5 = MLPClassifier(
+    redKFOLD10 = MLPClassifier(
         hidden_layer_sizes=(64,),
         activation='logistic',
         solver='sgd',
@@ -93,7 +93,7 @@ for train_index, test_index in kf10.split(x):
         random_state=67
     );
 
-    redKFOLD5.fit(x_train, y_train);
+    redKFOLD10.fit(x_train, y_train);
     acierto = redKFOLD5.score(x_test, y_test);
 
     list_acierto.append(acierto);#guardo los aciertos
