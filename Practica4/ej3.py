@@ -6,7 +6,7 @@ from sklearn.cluster import KMeans
 import sklearn.metrics as metrics
 
 # metodo del codo para k optima
-def metodo_codo(datos, k_max=10, random_state=67):
+def metodo_codo(datos, k_max=10, random_state=67, ax=None):
     inercias = []
     k_valores = range(1, k_max + 1)
     
@@ -15,22 +15,21 @@ def metodo_codo(datos, k_max=10, random_state=67):
         kmedias.fit(datos)
         inercias.append(kmedias.inertia_)  # suma de distancias^2 al centroide más cercano 
     
-    plt.figure(figsize=(7,5))
-    plt.plot(k_valores, inercias, marker='o')
-    plt.xlabel('Número de clusters (k)')
-    plt.ylabel('Inercia (suma de distancias cuadráticas)')
-    plt.title('Método del codo')
-    plt.xticks(k_valores)
-    plt.grid(True, alpha=0.3)
-    plt.show()
+    if ax is None: # AGREGADO
+        ax = plt.gca() # AGREGADO
+    
+    ax.plot(k_valores, inercias, marker='o')
+    ax.set_xlabel('Número de clusters (k)')
+    ax.set_ylabel('Inercia (suma de distancias cuadráticas)')
+    ax.set_title('Método del codo')
+    ax.set_xticks(k_valores)
+    ax.grid(True, alpha=0.3)
     
     return inercias
 
 datos = np.loadtxt("iris81_trn.csv", delimiter=',')
 x_iris = datos[:,[0,1,2,3]]
 y_iris = datos[:,[4,5,6]]
-
-inercias = metodo_codo(x_iris, k_max=10)
 
 # Asignación de etiquetas a cada salida de patrón:
 # Setosa = 0 (azul)
@@ -44,7 +43,6 @@ for i in range(y_iris.shape[0]):
         etiquetas_reales.append(1)
     else:
         etiquetas_reales.append(2)
-
 
 k = [2,3,4,5,6,7,8,9,10]
 resultados_silhouette = []
@@ -63,25 +61,26 @@ for valor_k in k:
 
     kmedias.fit(x_iris)
     etiquetas = kmedias.labels_
+
     resultados_silhouette.append(
         metrics.silhouette_score(x_iris, etiquetas, metric='euclidean')
-    ) #Silhouette
+    ) # Silhouette
 
     resultados_calinski.append(
         metrics.calinski_harabasz_score(x_iris, etiquetas)
-    )#Calinski harabasz
+    ) # Calinski harabasz
 
     resultados_davies.append(
         metrics.davies_bouldin_score(x_iris, etiquetas)
-    ) #Davie bouldin
+    ) # Davies bouldin
 
     resultados_fowlkes.append(
         metrics.fowlkes_mallows_score(etiquetas_reales, etiquetas)
-    )#Fowlkes mallows
+    ) # Fowlkes mallows
 
     resultados_inercia.append(
         kmedias.inertia_
-    )#Compactitud / inercia?
+    ) # Inercia
 
     print(f"\nk = {valor_k}")
     print(f"  Silhouette:        {resultados_silhouette[-1]:.4f}")
@@ -91,23 +90,50 @@ for valor_k in k:
     print(f"  Inercia:           {resultados_inercia[-1]:.4f}")
 
 
-fig, ax = plt.subplots()
+fig, axs = plt.subplots(3, 2, figsize=(12, 10))
 
-ax.set_xlabel('k: Numero de clusters')
+# Grafico Silhouette
+axs[0,0].set_xlabel('k: Numero de clusters')
+axs[0,0].set_ylabel('Silhouette')
+axs[0,0].plot(k, resultados_silhouette, label='Silhouette', color='blue')
+axs[0,0].scatter(k, resultados_silhouette, s=10, color='blue')
+axs[0,0].grid()
+axs[0,0].legend()
 
-ax.plot(k, resultados_silhouette, label='Silhouette')
-ax.plot(k, resultados_calinski, label='Calinski-Harabasz')
-ax.plot(k, resultados_davies, label='Davies-Bouldin')
-ax.plot(k, resultados_fowlkes, label='Fowlkes-Mallows')
-ax.plot(k, resultados_inercia, label='Inercia')
+# Grafico Calinski-Harabasz
+axs[0,1].set_xlabel('k: Numero de clusters')
+axs[0,1].set_ylabel('Calinski-Harabasz')
+axs[0,1].plot(k, resultados_calinski, label='Calinski-Harabasz', color='orange')
+axs[0,1].scatter(k, resultados_calinski, s=10, color='orange')
+axs[0,1].grid()
+axs[0,1].legend()
 
-ax.grid()
+# Grafico Davies-Bouldin
+axs[1,0].set_xlabel('k: Numero de clusters')
+axs[1,0].set_ylabel('Davies-Bouldin')
+axs[1,0].plot(k, resultados_davies, label='Davies-Bouldin', color='green')
+axs[1,0].scatter(k, resultados_davies, s=10, color='green')
+axs[1,0].grid()
+axs[1,0].legend()
 
-ax.scatter(k, resultados_silhouette, s=10)
-ax.scatter(k, resultados_calinski, s=10)
-ax.scatter(k, resultados_davies, s=10)
-ax.scatter(k, resultados_fowlkes, s=10)
-ax.scatter(k, resultados_inercia, s=10)
+# Grafico Fowlkes-Mallows
+axs[1,1].set_xlabel('k: Numero de clusters')
+axs[1,1].set_ylabel('Fowlkes-Mallows')
+axs[1,1].plot(k, resultados_fowlkes, label='Fowlkes-Mallows', color='red')
+axs[1,1].scatter(k, resultados_fowlkes, s=10, color='red')
+axs[1,1].grid()
+axs[1,1].legend()
 
-ax.legend()
+# Grafico Inercia
+axs[2,0].set_xlabel('k: Numero de clusters')
+axs[2,0].set_ylabel('Inercia')
+axs[2,0].plot(k, resultados_inercia, label='Inercia', color='purple')
+axs[2,0].scatter(k, resultados_inercia, s=10, color='purple')
+axs[2,0].grid()
+axs[2,0].legend()
+
+# Metodo del codo
+metodo_codo(x_iris, k_max=10, ax=axs[2,1]) # AGREGADO
+
+plt.tight_layout()
 plt.show()

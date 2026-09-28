@@ -8,7 +8,7 @@ import random
 import time
 
 # Carga de datos
-datos = np.loadtxt("circulo.csv", delimiter=',')
+datos = np.loadtxt("te.csv", delimiter=',')
 
 # Variables
 epocasMax_1 = 300
@@ -16,15 +16,15 @@ epocasMax_2 = 500
 epocasMax_3 = 200
 nro_entradas = datos.shape[1]
 nro_patrones = datos.shape[0]
-tam_matriz = [3,3] #2parte a
-# tam_matriz = [1,9] #parte b
+# tam_matriz = [6,6] #parte a
+tam_matriz = [1,36] #parte b
 neuronas = np.empty(shape=(tam_matriz[0],tam_matriz[1],nro_entradas))
 
 # Matriz de posiciones para medir la distancia (entorno de neurona)
 neuronas_pos = np.indices((tam_matriz[0], tam_matriz[1])).transpose(1,2,0)
 
 # Inicialización de los pesos (entrada aleatoria)
-#Evita gastar las priemras epocas en acercarse a la nube de puntos
+#Evita gastar las primeras epocas en acercarse a la nube de puntos
 indices = np.arange(nro_patrones)
 random.shuffle(indices)
 indice = 0
@@ -155,7 +155,7 @@ while(epoca<epocasMax_2):
         neurona_ganadora = [0,0]
         # norma_minima = np.inf
 
-        # Selección de neurona ganadora (OPTIMIZAR)
+        # Selección de neurona ganadora 
         neuronas_vector = neuronas.reshape(-1, nro_entradas)
         normas = np.subtract(datos[entrada], neuronas_vector)
         normas = np.linalg.norm(normas, ord=2, axis=1)
@@ -194,7 +194,7 @@ while(epoca<epocasMax_2):
 epoca = 0
 entorno = 0
 eta = 0.01
-print("Etapa 2")
+print("Etapa 3")
 while(epoca<epocasMax_3):
     print(f"Epoca: {epoca}")
 
@@ -204,7 +204,7 @@ while(epoca<epocasMax_3):
         neurona_ganadora = [0,0]
         norma_minima = np.inf
 
-        # Seleccion de neurona ganadora (OPTIMIZAR)
+        # Seleccion de neurona ganadora 
         neuronas_vector = neuronas.reshape(-1, nro_entradas)
         normas = np.subtract(datos[entrada], neuronas_vector)
         normas = np.linalg.norm(normas, ord=2, axis=1)
