@@ -14,7 +14,7 @@ c2 = 2
 paciencia = 50
 
 # Inicializacion
-D = 1 # funcion i D = 1, funcion ii D = 2
+D = 2 # funcion i D = 1, funcion ii D = 2
 if D == 1:
     xmin = np.full(D, -512.0) # dominio de la funcion i)
     xmax = np.full(D,  512.0)
@@ -106,7 +106,7 @@ if D == 1:
     fig_anim, ax_anim = plt.subplots()
     ax_anim.plot(x1a, f1a, lw=0.8)
     scat_part = ax_anim.scatter([], [], c='r', s=20)
-    scat_best = ax_anim.scatter([], [], c='g', s=60)
+    # scat_best = ax_anim.scatter([], [], c='g', s=60)
     ax_anim.set_xlim(xmin[0], xmax[0])
     ax_anim.set_ylim(f1a.min() - 10, f1a.max() + 10)
     ax_anim.set_title("Enjambre buscando el minimo (funcion i)")
@@ -117,8 +117,8 @@ if D == 1:
         fpos = np.array([ev.Core.funcion_objetivo(val) for val in pos[:, 0]])
         scat_part.set_offsets(np.stack([pos[:, 0], fpos]).T)
         b = historico_mejor_global[frame]
-        scat_best.set_offsets([[b[0], ev.Core.funcion_objetivo(b[0])]])
-        return scat_part, scat_best
+        # scat_best.set_offsets([[b[0], ev.Core.funcion_objetivo(b[0])]])
+        return scat_part#, scat_best
 else:
     x2a = np.linspace(xmin[0], xmax[0], 100)
     y2a = np.linspace(xmin[1], xmax[1], 100)
@@ -128,7 +128,7 @@ else:
     ax_anim = fig_anim.add_subplot(projection='3d')
     ax_anim.plot_surface(Xa, Ya, Za, cmap='viridis', alpha=0.6)
     scat_part = ax_anim.scatter3D([], [], [], c='r', s=20)
-    scat_best = ax_anim.scatter3D([], [], [], c='g', s=80, depthshade=False)
+    # scat_best = ax_anim.scatter3D([], [], [], c='g', s=80, depthshade=False)
     ax_anim.set_xlabel('x'); ax_anim.set_ylabel('y'); ax_anim.set_zlabel('f(x,y)')
     ax_anim.set_title("Enjambre buscando el minimo (funcion ii)")
 
@@ -138,8 +138,8 @@ else:
         scat_part._offsets3d = (pos[:, 0], pos[:, 1], zp)
         b = historico_mejor_global[frame]
         zb = ev.Core.funcion_objetivo2(b[0], b[1])
-        scat_best._offsets3d = ([b[0]], [b[1]], [zb])
-        return scat_part, scat_best
+        # scat_best._offsets3d = ([b[0]], [b[1]], [zb])
+        return scat_part#, scat_best
 
 anim = animation.FuncAnimation(fig=fig_anim, func=update, frames=len(historico_pos), interval=50, repeat=False)
 plt.show()
