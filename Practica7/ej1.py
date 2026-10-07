@@ -8,9 +8,9 @@ import clase_core as ev
 import random
 import time
 
-cant_particulas = 4
-c1 = 1.5
-c2 = 1.5
+cant_particulas = 50
+c1 = 2
+c2 = 2
 paciencia = 50
 
 # Inicializacion
@@ -27,8 +27,9 @@ x = np.empty((cant_particulas, D))
 v = np.empty((cant_particulas, D))
 y = np.empty((cant_particulas, D))
 f_yk = np.empty(cant_particulas)
-mejor_valor = np.inf
-y_global = None
+y_global = None # y'
+mejor_valor = np.inf # f(y')
+
 for k in range(cant_particulas):
     for i in range(D):
         x[k, i] = random.uniform(xmin[i], xmax[i]) # x_ki(0) -> U(xmin, xmax)
