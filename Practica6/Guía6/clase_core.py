@@ -11,16 +11,42 @@ class Core:
 
         return poblacion
 
+    def generar_poblacion2(n):
+        poblacion = []
+        for i in range(n):
+            cromosoma = [random.randint(0,1) for _ in range(16)]
+            poblacion.append(cromosoma)
+        return poblacion
+
     def binario_a_entero(cromosoma):
         binario = ''.join(map(str,cromosoma)); #pasa el array a string
         return int(binario, 2); #pasa el string a int
 
+        # potencias = []
+        # for i in range(10,0,-1):
+        #     potencias.append(2^i)
+        # return np.dot(potencias,cromosoma)
+
     def decodificar(entero):
-        x = -512 + (entero/1023) * (512 - (-512));
-        return x;
+        return -512 + (entero/1023) * (512 - (-512));
+
+    def decodificar2(entero):
+        return -100 + (entero/255) * 200;
 
     def funcion_objetivo(x):
         return -x * np.sin(np.sqrt(abs(x)));
+
+    def derivada_funcion(x):
+        return -np.sin(np.sqrt(abs(x)))-(np.sqrt(abs(x))*np.cos(np.sqrt(abs(x))))/2
+
+    def funcion_objetivo2(x,y):
+        return (x**2 + y**2)**(0.25) * (np.sin(50*(x**2 + y**2)**(0.1))**2 + 1)
+
+    def derivada_funcion2(x,y):
+        s = x**2 + y**2 + 1e-12          # evita división por 0 en el origen
+        u = 50 * s**0.1
+        dfds = 0.25 * s**-0.75 * (np.sin(u)**2 + 1) + 5 * s**-0.65 * np.sin(2*u)
+        return 2*x*dfds, 2*y*dfds
 
     def evaluar_individuo(cromosoma):
         v = Core.binario_a_entero(cromosoma);
@@ -28,11 +54,29 @@ class Core:
         valor = Core.funcion_objetivo(x);
         return x, valor;
 
+    def evaluar_individuo2(cromosoma):
+        x = cromosoma[:8]   # los primeros 8 bits
+        y = cromosoma[8:]   # los ultimos 8 bits
+        vx = Core.binario_a_entero(x)
+        vy = Core.binario_a_entero(y)
+        vx = Core.decodificar2(vx)
+        vy = Core.decodificar2(vy)
+        valor = Core.funcion_objetivo2(vx,vy)
+        return (vx,vy), valor
+
     def evaluar_poblacion(poblacion):
         resultados = [];
         for cromosoma in poblacion:
             x, valor = Core.evaluar_individuo(cromosoma);
             resultados.append((cromosoma,x, valor));
+
+        return resultados
+
+    def evaluar_poblacion2(poblacion):
+        resultados = [];
+        for cromosoma in poblacion:
+            xy, valor = Core.evaluar_individuo2(cromosoma);
+            resultados.append((cromosoma, xy, valor));
 
         return resultados
 
