@@ -23,13 +23,14 @@ mlp = [MLPClassifier(
     hidden_layer_sizes = (64,), # arquitectura
     activation = 'logistic', # f de activacion, relu, tanh, logistic, identity
     solver = 'sgd', # algoritmo de optimizacion, adam, sgd, lbfgs
+    max_iter = 1000, # maximo de iteraciones, si no converge antes
+    shuffle = True, # mezclar los datos antes de cada epoca
+    random_state = 67, # semilla aleatoria, sin esto cada entrenamiento da resultados diferentes
+    
     # alpha = 0.0001, # parametro de regularizacion, penalizacion de pesos grandes
     # batch_size = 'auto', # tamaño de batch, auto = min(200, n_samples)
     # learning_rate = 'constant', # tasa de aprendizaje (solo para sgd), constant, invscaling, adaptive
     # learning_rate_init = 0.001, # tasa de aprendizaje inicial (solo para sgd y adam)
-    max_iter = 1000, # maximo de iteraciones, si no converge antes
-    shuffle = True, # mezclar los datos antes de cada epoca
-    random_state = 67, # semilla aleatoria, sin esto cada entrenamiento da resultados diferentes
     # tol = 1e-4, # tolerancia para la convergencia
     # verbose = False, # imprimir el progreso de entrenamiento
     # warm_start = False, # si True, reutiliza la solucion de la llamada anterior para entrenar mas
@@ -64,11 +65,12 @@ for tr_index, tst_index in kf5.split(x):
     y_tst = y[tst_index]
 
     mlp[1].fit(x_tr, y_tr) # entrenamiento
+    kfolds5.append(mlp[1].score(x_tst, y_tst)) # mlp[1].score lo hace sin necedidad de predict + accuracy_score
+    iteraciones5.append(mlp[1].n_iter_)
+
     #y_pred = mlp[1].predict(x_tst) # prediccion
     #accuracy = accuracy_score(y_tst, y_pred) # predicciones correctas / total de muestras
     #kfolds5.append(accuracy)
-    kfolds5.append(mlp[1].score(x_tst, y_tst)) # mlp[1].score lo hace sin necedidad de predict + accuracy_score
-    iteraciones5.append(mlp[1].n_iter_)
 
 media_kfolds5 = np.mean(kfolds5)
 var_kfolds5 = np.var(kfolds5)
@@ -79,7 +81,7 @@ print(f"Iteraciones por fold: {iteraciones5}")
 kf10 = KFold(
     n_splits = 10, # cantidad de folds
     shuffle = True, # mezclar antes de partir
-    random_state = 42 # semilla
+    random_state = 67 # semilla
 )
 kfolds10 = []
 iteraciones10 = []
@@ -90,11 +92,12 @@ for tr_index, tst_index in kf10.split(x):
     y_tst = y[tst_index]
 
     mlp[2].fit(x_tr, y_tr) # entrenamiento
+    kfolds10.append(mlp[2].score(x_tst, y_tst)) # mlp[2].score lo hace sin necedidad de predict + accuracy_score
+    iteraciones10.append(mlp[2].n_iter_)
+
     #y_pred = mlp[2].predict(x_tst) # prediccion
     #accuracy = accuracy_score(y_tst, y_pred) # predicciones correctas / total de muestras
     #folds10.append(accuracy)
-    kfolds10.append(mlp[2].score(x_tst, y_tst)) # mlp[2].score lo hace sin necedidad de predict + accuracy_score
-    iteraciones10.append(mlp[2].n_iter_)
 
 media_kfolds10 = np.mean(kfolds10)
 var_kfolds10 = np.var(kfolds10)

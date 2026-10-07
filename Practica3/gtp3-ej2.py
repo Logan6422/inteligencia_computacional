@@ -14,8 +14,8 @@ print(f"Datos: {x.shape}, Clases: {len(set(y))}")
 
 mlp = MLPClassifier(
     hidden_layer_sizes = (64,), # arquitectura
-    activation = 'logistic', # f de activacion, relu, tanh, logistic, identity
-    solver = 'sgd', # algoritmo de optimizacion, adam, sgd, lbfgs
+    activation = 'identity', # f de activacion, relu, tanh, logistic, identity
+    solver = 'lbfgs', # algoritmo de optimizacion, adam, sgd, lbfgs
     max_iter = 1000, # maximo de iteraciones, si no converge antes
     shuffle = True, # mezclar los datos antes de cada epoca
     random_state = 67, # semilla aleatoria, sin esto cada entrenamiento da resultados diferentes
