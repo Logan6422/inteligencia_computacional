@@ -54,7 +54,7 @@ def fitness(cromosoma):
         acc = cross_val_score(modelo(), Xtr[:, idx], ytr, cv=cv).mean() #calcula el accuracy usando el modelo knn y calcula la media
         f = max(acc - LAMBDA * len(idx) / L, 0.0) + 1e-6   # > 0 para la ruleta
         #fitness = acurracy - penalizacion
-        #penaizacion = lambda * genes seleccionados / 71291
+        #penalizacion = lambda * genes seleccionados / 7129 (total)
     cache[clave] = f #guarda en cache [cromosoma] = accuracy
     return f
 
@@ -98,7 +98,7 @@ print(f"\nTodas las caracteristicas ({L}): accuracy test = {acc_all:.3f}")
 print(f"Subconjunto del AG ({len(idx)}):  accuracy test = {acc_sub:.3f}")
 
 
-# ---------- 6) Graficos ----------
+#6) Graficos 
 
 n_carac_ag = len(idx)
 reduccion = 100 * (1 - n_carac_ag / L)
